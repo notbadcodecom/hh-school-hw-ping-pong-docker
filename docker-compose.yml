@@ -1,0 +1,34 @@
+services:
+  db:
+    image: postgres:15.1-alpine3.17
+    container_name: hh_scholl_postgre
+    volumes:
+      - postgre_data_hh_pingpong:/var/lib/postgresql/data/
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: pingpong
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+  web:
+    container_name: hh_scholl_pingpong
+    image: dockerfile:latest
+    build:
+      context: .
+      dockerfile: dockerfile
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DB_ENGINE=django.db.backends.postgresql
+      - DB_NAME=pingpong
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_HOST=db
+      - DB_PORT=5432
+volumes:
+  postgre_data_hh_pingpong:
